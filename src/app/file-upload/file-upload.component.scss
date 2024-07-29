@@ -75,9 +75,11 @@
 
   &__list {
     margin-top: 20px;
+    overflow-x: scroll;
 
     table {
       border-collapse: collapse;
+      min-width: 400px;
       width: 100%;
 
       thead {
