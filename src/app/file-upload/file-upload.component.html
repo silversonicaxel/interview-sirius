@@ -1,0 +1,61 @@
+<div
+  class="fileupload"
+  [ngClass]="{ 'fileupload--is-focus': isDragging || isFocused }"
+  (dragover)="onFileDragOver($event)"
+  (dragleave)="onFileDragLeave($event)"
+  (drop)="onFileDrop($event)"
+>
+  <header class="fileupload__header">
+    My Sirius files
+  </header>
+
+  <label class="fileupload__message" [for]="id" *ngIf="!fileList || fileList.length === 0">
+    Drop files here
+  </label>
+  <div class="fileupload__guide" *ngIf="isDragging">
+    Drop files to upload them
+  </div>
+  <div class="fileupload__notification" *ngIf="isUploading && amountUploading > 0">
+    <span *ngIf="amountUploading <= 1">{{ amountUploading }} file</span>
+    <span *ngIf="amountUploading > 1">{{ amountUploading }} files</span>
+    uploading
+  </div>
+  <div class="fileupload__notification" *ngIf="isUploaded && amountUploading > 0">
+    {{ amountUploading }} upload complete
+  </div>
+
+  <input
+    [id]="id"
+    [name]="name"
+    class="fileupload__input"
+    type="file"
+    multiple
+    [attr.accept]="useAcceptFileExtensions(extensions)"
+    [attr.tabindex]="tabindex"
+    (change)="onFileManualSelect($event)"
+    (focus)="onInputFocus()"
+    (blur)="onInputBlur()"
+  />
+
+  <div class="fileupload__list" *ngIf="fileList && fileList.length > 0">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>File size</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let file of fileList">
+          <td>
+            <div class="fileupload__list-name">
+              <img class="fileupload__icon" [attr.src]="useFileIcon(file.type)">
+              <span>{{ file.name }}</span>
+            </div>
+          </td>
+          <td>{{ useFileSize(file.size) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

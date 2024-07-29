@@ -1,27 +1,31 @@
 # InterviewSirius
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.1.2.
+## What is this repository for?
 
-## Development server
+This repository contains the project for showing a file upload component.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## How to run the web appliation
 
-## Code scaffolding
+For live development purposes:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+```
+$ npm run start
+```
 
-## Build
+For bulding a distribution:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+```
+$ npm run build
+```
 
-## Running unit tests
+## How did I set it up?
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The web application is built with `Angular` and `Typescript`.
 
-## Running end-to-end tests
+## Implementation choices
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+## Possible improvements
 
-## Further help
+## System architecture
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+A sketch of the system architecture can be found at the following [miro board](https://miro.com/app/board/uXjVKutBxsA=/).

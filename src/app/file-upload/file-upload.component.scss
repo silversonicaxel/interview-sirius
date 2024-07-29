@@ -1,0 +1,117 @@
+@import "../../assets/styles/mixins.scss";
+
+:host {
+  --fileupload-color-background: #FFF;
+  --fileupload-color-border: #FFF;
+  --fileupload-color-border-focus: #413ED0;
+  --fileupload-color-background-guide: #413ED0;
+  --fileupload-color-text-notification: #FFF;
+  --fileupload-color-border-table: #D2D2D2;
+  --fileupload-color-background-notification: #FFF;
+  --fileupload-color-border-notification: #D2D2D2;
+  --fileupload-size-height: 200px;
+  --fileupload-size-icon: 24px;
+}
+
+.fileupload {
+  background-color: var(--fileupload-color-background);
+  border: 2px solid var(--fileupload-color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  min-height: var(--fileupload-size-height);
+  padding: 16px;
+  position: relative;
+
+  &--is-focus {
+    border-color: var(--fileupload-color-border-focus);
+  }
+
+  &__header {
+    font-family: 'Gilroy';
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 24px;
+  }
+
+  &__message {
+    align-items: center;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    min-height: var(--fileupload-size-height);
+    width: 100%;
+  }
+
+  &__guide {
+    border-radius: 16px;
+    background-color: var(--fileupload-color-background-guide);
+    color: var(--fileupload-color-text-notification);
+    font-family: 'Gilroy';
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+    width: 160px;
+    height: 60px;
+    padding: 5px 10px;
+    box-sizing: border-box;
+    text-align: center;
+    position: absolute;
+    bottom: 20px;
+    left: calc(50% - 160px / 2);
+  }
+
+  &__notification {
+    background-color: var(--fileupload-color-background-notification);
+    border: 1px solid var(--fileupload-color-border-notification);
+    padding: 20px;
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+  }
+
+  &__input {
+    @include hidden();
+  }
+
+  &__list {
+    margin-top: 20px;
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+
+      thead {
+        font-size: 12px;
+        text-align: left;
+      }
+
+      tbody {
+        font-size: 14px;
+      }
+
+      tr {
+        th, td {
+          line-height: 24px;
+          width: 50%;
+          border-bottom: 1px solid var(--fileupload-color-border-table);
+          padding: 8px 0;
+
+          &:last-child {
+            padding-left: 8px;
+          }
+        }
+      }
+    }
+  }
+
+  &__list-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__icon {
+    height: var(--fileupload-size-icon);
+    width: var(--fileupload-size-icon);
+  }
+}
