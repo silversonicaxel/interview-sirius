@@ -1,1 +1,12 @@
-/* You can add global styles to this file, and also import other style files */
+@import "./assets/styles/variables.scss";
+@import "./assets/styles/fonts.scss";
+
+html,
+body {
+  background-color: var(--color-background);
+  border: 0;
+  font-family: 'Gilroy';
+  font-weight: 400;
+  margin: 0;
+  padding: 0;
+}
