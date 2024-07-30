@@ -1,6 +1,7 @@
 import { NgClass, NgIf, NgFor } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { endsWithSome } from '../shared/utils';
+import { RequestService } from '../services/request.service';
 
 @Component({
   selector: 'app-file-upload',
@@ -23,7 +24,11 @@ export class FileUploadComponent {
   isDragging = false;
   isUploading = false;
   isUploaded = false;
+  isError = false;
   amountUploading: number = 0;
+  amountUploaded: number = 0;
+
+  constructor(private requestService: RequestService) {}
 
   onInputFocus() {
     this.isFocused = true;
@@ -45,7 +50,7 @@ export class FileUploadComponent {
     this.isDragging = false;
   }
 
-  onFileDrop(event: DragEvent): void {
+  async onFileDrop(event: DragEvent): Promise<void> {
     event.preventDefault();
     event.stopPropagation();
 
@@ -54,24 +59,24 @@ export class FileUploadComponent {
 
       this.openNotification(filteredFiles.length);
 
-      this.uploadFiles(filteredFiles);
+      const uploadedFiles = await this.uploadFiles(filteredFiles);
 
-      this.closeNotification();
+      this.closeNotification(uploadedFiles.length);
     }
 
     this.isDragging = false;
   }
 
-  onFileManualSelect(event: Event): void {
+  async onFileManualSelect(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (input.files) {
       const filteredFiles = this.getFilteredFiles(input.files)
 
       this.openNotification(filteredFiles.length);
 
-      this.uploadFiles(filteredFiles);
+      const uploadedFiles = await this.uploadFiles(filteredFiles);
 
-      this.closeNotification();
+      this.closeNotification(uploadedFiles.length);
     }
   }
 
@@ -80,13 +85,16 @@ export class FileUploadComponent {
     this.isUploading = true;
   }
 
-  closeNotification(): void {
+  closeNotification(amountUploaded: number): void {
+    this.amountUploaded = amountUploaded;
     this.isUploading = false;
     this.isUploaded = true;
 
     setTimeout(() => {
       this.amountUploading = 0;
+      this.amountUploaded = 0;
       this.isUploaded = false;
+      this.isError = false;
     }, this.NOTIFICATION_CLOSE_TIMER);
   }
 
@@ -102,10 +110,22 @@ export class FileUploadComponent {
     return filteredFileList;
   }
 
-  uploadFiles(files: File[]): void {
+  async uploadFiles(files: File[]): Promise<File[]> {
+    const uploadedFiles: File[] = []
+
     for (let i = 0; i < files.length; i++) {
-      this.fileList.push(files[i]);
+      const formData = new FormData();
+      formData.append('file', files[i], files[i].name);
+
+      await this.requestService.post(formData)
+        .then(_ => {
+          this.fileList.push(files[i]);
+          uploadedFiles.push(files[i]);
+        })
+        .catch(_ => this.isError = true)
     }
+
+    return uploadedFiles;
   }
 
   useAcceptFileExtensions(extensions: string[]): string {

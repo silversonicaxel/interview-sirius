@@ -20,8 +20,13 @@
     <span *ngIf="amountUploading > 1">{{ amountUploading }} files</span>
     uploading
   </div>
-  <div class="fileupload__notification" *ngIf="isUploaded && amountUploading > 0">
-    {{ amountUploading }} upload complete
+  <div
+    class="fileupload__notification"
+    [ngClass]="{ 'fileupload__notification--error': isError }"
+    *ngIf="isUploaded && amountUploading > 0"
+  >
+    {{ amountUploaded }} upload completed.
+    <p *ngIf="isError" [id]="id + '-error-message'">{{ amountUploading - amountUploaded }} with error.</p>
   </div>
 
   <input
@@ -32,6 +37,8 @@
     multiple
     [attr.accept]="useAcceptFileExtensions(extensions)"
     [attr.tabindex]="tabindex"
+    [attr.aria-invalid]="isError ? 'true' : 'false'"
+    [attr.aria-errormessage]="isError ? id + '-error-message' : null"
     (change)="onFileManualSelect($event)"
     (focus)="onInputFocus()"
     (blur)="onInputBlur()"

@@ -9,6 +9,7 @@
   --fileupload-color-border-table: #D2D2D2;
   --fileupload-color-background-notification: #FFF;
   --fileupload-color-border-notification: #D2D2D2;
+  --fileupload-color-border-notification-error: #A52A2A;
   --fileupload-size-height: 200px;
   --fileupload-size-icon: 24px;
 }
@@ -67,6 +68,14 @@
     position: absolute;
     bottom: 5px;
     right: 5px;
+
+    p {
+      margin: 0;
+    }
+
+    &--error {
+      border-color: var(--fileupload-color-border-notification-error);
+    }
   }
 
   &__input {
