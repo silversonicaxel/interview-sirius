@@ -1,7 +1,8 @@
 import { NgClass, NgIf, NgFor } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { endsWithSome } from '../shared/utils';
-import { RequestService } from '../services/request.service';
+import { ApiService } from '../services/api.service';
+import { catchError, concatMap, from, map, of } from 'rxjs';
 
 @Component({
   selector: 'app-file-upload',
@@ -25,10 +26,11 @@ export class FileUploadComponent {
   isUploading = false;
   isUploaded = false;
   isError = false;
-  amountUploading: number = 0;
-  amountUploaded: number = 0;
+  currentUploadedFileList: File[] = [];
+  currentAmountUploading: number = 0;
+  currentAmountUploaded: number = 0;
 
-  constructor(private requestService: RequestService) {}
+  constructor(private apiService: ApiService) {}
 
   onInputFocus() {
     this.isFocused = true;
@@ -50,51 +52,48 @@ export class FileUploadComponent {
     this.isDragging = false;
   }
 
-  async onFileDrop(event: DragEvent): Promise<void> {
+  onFileDrop(event: DragEvent): void {
     event.preventDefault();
     event.stopPropagation();
 
     if (event.dataTransfer?.files) {
       const filteredFiles = this.getFilteredFiles(event.dataTransfer.files)
 
-      this.openNotification(filteredFiles.length);
+      this.showUploadingNotification(filteredFiles.length);
 
-      const uploadedFiles = await this.uploadFiles(filteredFiles);
-
-      this.closeNotification(uploadedFiles.length);
+      this.uploadFiles(filteredFiles);
     }
 
     this.isDragging = false;
   }
 
-  async onFileManualSelect(event: Event): Promise<void> {
+  onFileManualSelect(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files) {
       const filteredFiles = this.getFilteredFiles(input.files)
 
-      this.openNotification(filteredFiles.length);
+      this.showUploadingNotification(filteredFiles.length);
 
-      const uploadedFiles = await this.uploadFiles(filteredFiles);
-
-      this.closeNotification(uploadedFiles.length);
+      this.uploadFiles(filteredFiles);
     }
   }
 
-  openNotification(amountUploading: number): void {
-    this.amountUploading = amountUploading;
+  showUploadingNotification(amountUploading: number): void {
+    this.currentAmountUploading = amountUploading;
     this.isUploading = true;
   }
 
-  closeNotification(amountUploaded: number): void {
-    this.amountUploaded = amountUploaded;
+  showUploadedNotification(amountUploaded: number): void {
+    this.currentAmountUploaded = amountUploaded;
     this.isUploading = false;
     this.isUploaded = true;
 
     setTimeout(() => {
-      this.amountUploading = 0;
-      this.amountUploaded = 0;
+      this.currentAmountUploading = 0;
+      this.currentAmountUploaded = 0;
       this.isUploaded = false;
       this.isError = false;
+      this.currentUploadedFileList = [];
     }, this.NOTIFICATION_CLOSE_TIMER);
   }
 
@@ -110,22 +109,38 @@ export class FileUploadComponent {
     return filteredFileList;
   }
 
-  async uploadFiles(files: File[]): Promise<File[]> {
-    const uploadedFiles: File[] = []
+  uploadFiles(files: File[]): void {
+    const headers = { 'enctype': 'multipart/form-data' };
 
-    for (let i = 0; i < files.length; i++) {
-      const formData = new FormData();
-      formData.append('file', files[i], files[i].name);
+    const fileUploadObservables = from(files)
+      .pipe(
+        concatMap((file: File) => {
+          const fileFormData = new FormData();
+          fileFormData.append('file', file, file.name);
 
-      await this.requestService.post(formData)
-        .then(_ => {
-          this.fileList.push(files[i]);
-          uploadedFiles.push(files[i]);
+          return this.apiService.postForm(fileFormData, headers)
+            .pipe(
+              map(response => {
+                this.fileList.push(file);
+                this.currentUploadedFileList.push(file);
+                return response;
+              }),
+              catchError(_ => {
+                this.isError = true;
+                return of(null);
+              })
+            );
         })
-        .catch(_ => this.isError = true)
-    }
+    );
 
-    return uploadedFiles;
+    fileUploadObservables.subscribe({
+      complete: () => {
+        this.showUploadedNotification(this.currentUploadedFileList.length);
+      },
+      error: () => {
+        this.isError = true;
+      }
+    });
   }
 
   useAcceptFileExtensions(extensions: string[]): string {

@@ -15,18 +15,18 @@
   <div class="fileupload__guide" *ngIf="isDragging">
     Drop files to upload them
   </div>
-  <div class="fileupload__notification" *ngIf="isUploading && amountUploading > 0">
-    <span *ngIf="amountUploading <= 1">{{ amountUploading }} file</span>
-    <span *ngIf="amountUploading > 1">{{ amountUploading }} files</span>
+  <div class="fileupload__notification" *ngIf="isUploading && currentAmountUploading > 0">
+    <span *ngIf="currentAmountUploading <= 1">{{ currentAmountUploading }} file</span>
+    <span *ngIf="currentAmountUploading > 1">{{ currentAmountUploading }} files</span>
     uploading
   </div>
   <div
     class="fileupload__notification"
     [ngClass]="{ 'fileupload__notification--error': isError }"
-    *ngIf="isUploaded && amountUploading > 0"
+    *ngIf="isUploaded && currentAmountUploading > 0"
   >
-    {{ amountUploaded }} upload completed.
-    <p *ngIf="isError" [id]="id + '-error-message'">{{ amountUploading - amountUploaded }} with error.</p>
+    {{ currentAmountUploaded }} upload completed.
+    <p *ngIf="isError" [id]="id + '-error-message'">{{ currentAmountUploading - currentAmountUploaded }} with error.</p>
   </div>
 
   <input
